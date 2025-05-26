@@ -1,0 +1,26 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# --- Node.js / Next.js ---
+node_modules/git add .
+git commit -m "プロジェクト初期ファイル一式を追加"
+git push origin main
+
+.next/
+.env.local
+
+# --- エディタ・OS ---
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+*.swp
