@@ -8,6 +8,8 @@ venv/
 env/
 .env
 .env.*
+.denv
+denv/
 
 # --- Node.js / Next.js ---
 node_modules/git add .
