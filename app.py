@@ -10,6 +10,8 @@ import openai
 #from google import genai
 import os
 from dotenv import load_dotenv
+from datetime import datetime
+from gpt_parser import parse_utterance
 
 class Customer(BaseModel):
     customer_id: str
@@ -41,6 +43,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+#音声認識の方
+class RecordIn(BaseModel):
+    utterance: str
+    recorded_at: datetime
 
 
 @app.get("/")
@@ -138,6 +145,17 @@ async def ask_openai(request: Request):
 
     except Exception as e:
         return {"error": str(e)}
+
+
+@app.post("/api/record")
+async def record_feed(body: RecordIn):
+    # ここでGPTに飛ばしてパース
+    parsed = await parse_utterance(body.utterance, None)
+    # parsed には {"volume":200,"timestamp":"..."} のような dict が返る
+    return {"parsed": parsed}
+
+
+
 
 
 #         #AIで内容を要約し、本人のやりたいこと、Willを提案する
