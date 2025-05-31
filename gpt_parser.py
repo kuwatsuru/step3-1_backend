@@ -7,11 +7,17 @@ client = openai.OpenAI(api_key=api_key)
 
 SYSTEM_PROMPT = """
 あなたは赤ちゃんの授乳ログを構造化データに変換するアシスタントです。
-出力は必ず JSON 1 行のみ:
+以下の JSON フォーマットだけを厳密に返してください。余計な文章や説明を入れず、あくまで JSON 1 行のみを返すこと。
+
+フォーマット：
 {
-  "volume": int (mL),
-  "timestamp": ISO 8601 文字列
+  "milktype": "ミルク" または "母乳" または "不明",
+  "volume": 整数 (mL),
+  "timestamp": ISO 8601 形式の文字列
 }
+
+例：
+{"milktype":"ミルク","volume":200,"timestamp":"2025-06-01T10:00:00Z"}
 """
 
 FUNC_DEF = [{
@@ -19,10 +25,11 @@ FUNC_DEF = [{
     "parameters": {
       "type": "object",
       "properties": {
+        "milktype": {"type": "string"},
         "volume": {"type": "integer"},
         "timestamp": {"type": "string", "description":"ISO 8601"},
       },
-      "required":[ "volume", "timestamp" ]
+      "required":[ "milktype", "volume", "timestamp" ]
     }
 }]
 
