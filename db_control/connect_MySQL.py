@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+
 import os
 from dotenv import load_dotenv
 
@@ -38,5 +39,3 @@ print("DB_NAME:", DB_NAME)
 print("SSL_CA_PATH:", SSL_CA_PATH)
 print("DATABASE_URL:", DATABASE_URL)
 print("----------------------------------")
-
-__all__ = ["engine"]

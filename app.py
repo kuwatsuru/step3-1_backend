@@ -12,7 +12,6 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 from gpt_parser import parse_utterance
-from db_control.save_milklog import router as save_milklog_router
 
 class Customer(BaseModel):
     customer_id: str
@@ -180,9 +179,3 @@ async def record_feed(body: RecordIn):
 #     except Exception as e:
 #         return {"error": str(e)}
     
-# save_log.py の router を "/api" 配下にマウント
-app.include_router(
-    save_milklog_router,
-    prefix="/api",
-    tags=["feeding_logs"]
-)
