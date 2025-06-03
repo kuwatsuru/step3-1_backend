@@ -12,6 +12,12 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 from gpt_parser import parse_utterance
+from sqlalchemy.orm import sessionmaker
+from db_control.connect_MySQL import engine
+from db_control.mymodels_MySQL import MilkLog
+
+# SQLAlchemy セッションの準備
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 class Customer(BaseModel):
     customer_id: str
@@ -149,10 +155,40 @@ async def ask_openai(request: Request):
 
 @app.post("/api/record")
 async def record_feed(body: RecordIn):
+# === 1) GPT で構造化データを取得 ===
     parsed = await parse_utterance(body.utterance, body.recorded_at.isoformat())
     # parsed がどんな辞書になっているかログ出力
     print("🐣 GPT で構造化されたデータ:", parsed)
-    return {"parsed": parsed}
+
+# === 2) parsed の timestamp を datetime オブジェクトに変換 ===
+    ts_str = parsed.get("timestamp")
+    try:
+        # 末尾に "Z" がついている場合、"+00:00" に置き換えてから fromisoformat で UTC として扱う
+        ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+    except Exception:
+        # もし不正な形式なら、API に送られてきた recorded_at（リクエスト送信時刻）を使う
+        ts = body.recorded_at
+
+# === 3) SQLAlchemy で DB に INSERT ===
+    session = SessionLocal()
+    try:
+        new_log = MilkLog(
+            milktype   = parsed.get("milktype", "不明"),
+            volume     = parsed.get("volume", 0),
+            created_at = ts
+        )
+        session.add(new_log)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        print("🔴 DB 保存中にエラー:", e)
+        raise HTTPException(status_code=500, detail="DB 保存エラーが発生しました")
+    finally:
+        session.close()
+
+    # === 4) レスポンスを返す ===
+    return {"parsed": parsed, "saved": True}
+
 
 
 
@@ -179,3 +215,4 @@ async def record_feed(body: RecordIn):
 #     except Exception as e:
 #         return {"error": str(e)}
     
+#milklogにインサートする
