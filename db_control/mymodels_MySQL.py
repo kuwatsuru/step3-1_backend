@@ -1,6 +1,6 @@
 from sqlalchemy import String, Integer, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, DateTime
+from datetime import datetime
 
 class Base(DeclarativeBase):
     pass
@@ -30,7 +30,16 @@ class Purchases(Base):
 
 class PurchaseDetails(Base):
     __tablename__ = 'purchase_details'
-    detail_id: Mapped[str] = mapped_column(String(10), primary_key=True)
+    detail_id: Mapped[str] = mapped_column(String(10), primary_key=True, autoincrement=True)
     purchase_id: Mapped[str] = mapped_column(String(10), ForeignKey("purchases.purchase_id"))
     item_id: Mapped[str] = mapped_column(String(10), ForeignKey("items.item_id"))
     quantity: Mapped[int] = mapped_column(Integer)
+
+
+#baby_careのテーブルを追加
+class MilkLog(Base):
+    __tablename__ = 'milk_log'
+    id: Mapped[str] = mapped_column(Integer, primary_key=True)
+    milktype: Mapped[str] = mapped_column(String(10))
+    volume: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime)
