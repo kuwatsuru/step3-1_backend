@@ -13,11 +13,11 @@ SYSTEM_PROMPT = """
 {
   "milktype": "ミルク" または "母乳" または "不明",
   "volume": 整数 (mL),
-  "timestamp": ISO 8601 形式の文字列
+
 }
 
 例：
-{"milktype":"ミルク","volume":200,"timestamp":"2025-06-01T10:00:00Z"}
+{"milktype":"ミルク","volume":200}
 """
 
 FUNC_DEF = [{
@@ -27,9 +27,8 @@ FUNC_DEF = [{
       "properties": {
         "milktype": {"type": "string"},
         "volume": {"type": "integer"},
-        "timestamp": {"type": "string", "description":"ISO 8601"},
       },
-      "required":[ "milktype", "volume", "timestamp" ]
+      "required":[ "milktype", "volume" ]
     }
 }]
 
@@ -47,7 +46,6 @@ async def parse_utterance(utterance: str, recorded_at: str):
     )
     args = resp.choices[0].message.function_call.arguments
     data = json.loads(args)
-    # GPT が timestamp を返さなかった場合は recorded_at を使用
-    ts = data.get("timestamp") or recorded_at
-    data["timestamp"] = ts
-    return data  # {"volume":200,"timestamp":"..."}
+    # recorded_at を使用  
+    data["timestamp"] = recorded_at
+    return data  
