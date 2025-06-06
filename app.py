@@ -156,7 +156,7 @@ async def ask_openai(request: Request):
 @app.post("/api/record")
 async def record_feed(body: RecordIn):
 # === 1) GPT で構造化データを取得 ===
-    parsed = await parse_utterance(body.utterance, body.recorded_at.isoformat())
+    parsed = parse_utterance(body.utterance, body.recorded_at.isoformat())
     # parsed がどんな辞書になっているかログ出力
     print("🐣 GPT で構造化されたデータ:", parsed)
 

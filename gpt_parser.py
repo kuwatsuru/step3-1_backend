@@ -100,7 +100,7 @@ FUNC_DEF = [{
 }]
 
 
-async def parse_utterance(utterance: str, recorded_at: str):
+def parse_utterance(utterance: str, recorded_at: str):
     """
     utterance: ユーザーの発話テキスト
     recorded_at: ISO 8601 形式の文字列（例: "2025-06-02T10:00:00Z"）
@@ -113,7 +113,7 @@ async def parse_utterance(utterance: str, recorded_at: str):
     ]
 
     # 2) Function Calling を指定して GPT に構造化データを返してもらう
-    resp = await client.chat.completions.create(
+    resp = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=msgs,
         functions=FUNC_DEF,
