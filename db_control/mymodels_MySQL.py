@@ -44,3 +44,36 @@ class MilkLog(Base):
     milktype: Mapped[str] = mapped_column(String(10))
     volume: Mapped[int] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(DateTime)
+
+#activity_logsのテーブルを追加
+class ActivityLog(Base):
+    __tablename__ = 'activity_logs'
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
+    activity_type: Mapped[str] = mapped_column(
+        String(10), nullable=False
+    )
+    milktype: Mapped[str] = mapped_column(
+        String(10), nullable=False, default=''
+    )
+    volume: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0
+    )
+    diaper_type: Mapped[str] = mapped_column(
+        String(10), nullable=False, default=''
+    )
+    hardness: Mapped[str] = mapped_column(
+        String(10), nullable=False, default=''
+    )
+    diaper_amount: Mapped[str] = mapped_column(
+        String(10), nullable=False, default=''
+    )
+    sleep_state: Mapped[str] = mapped_column(
+        String(10), nullable=False, default=''
+    )
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime)
