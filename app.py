@@ -15,6 +15,8 @@ from gpt_parser import parse_utterance
 from sqlalchemy.orm import sessionmaker
 from db_control.connect_MySQL import engine
 from db_control.mymodels_MySQL import ActivityLog
+from sqlalchemy import text
+from sqlalchemy.engine import Result
 
 # SQLAlchemy セッションの準備
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
@@ -194,6 +196,37 @@ async def record_feed(body: RecordIn):
 
     # === 4) レスポンスを返す ===
     return {"parsed": parsed, "saved": True}
+
+@app.get("/api/logs")
+def get_logs(date: str):
+    # 日付チェック
+    try:
+        datetime.strptime(date, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="date は YYYY-MM-DD 形式で指定してください")
+
+    conn = engine.connect()
+    try:
+        stmt = text("""
+            SELECT * FROM activity_logs
+            WHERE DATE(timestamp) = :d
+            ORDER BY timestamp
+        """)
+        result: Result = conn.execute(stmt, {"d": date})
+        rows = [dict(r) for r in result.fetchall()]
+
+        feeding, diaper, sleep = [], [], []
+        for r in rows:
+            if r["activity_type"] == "feeding":
+                feeding.append(r)
+            elif r["activity_type"] == "diaper":
+                diaper.append(r)
+            else:
+                sleep.append(r)
+
+        return {"feeding": feeding, "diaper": diaper, "sleep": sleep}
+    finally:
+        conn.close()
 
 
 
