@@ -199,11 +199,11 @@ async def record_feed(body: RecordIn):
 
 @app.get("/api/logs")
 def get_logs(date: str):
-    # 日付チェック
-    try:
-        datetime.strptime(date, "%Y-%m-%d")
-    except ValueError:
-        raise HTTPException(status_code=400, detail="date は YYYY-MM-DD 形式で指定してください")
+    # # 日付チェック
+    # try:
+    #     datetime.strptime(date, "%Y-%m-%d")
+    # except ValueError:
+    #     raise HTTPException(status_code=400, detail="date は YYYY-MM-DD 形式で指定してください")
 
     conn = engine.connect()
     try:
@@ -213,7 +213,7 @@ def get_logs(date: str):
             ORDER BY timestamp
         """)
         result: Result = conn.execute(stmt, {"d": date})
-        rows = [dict(r) for r in result.fetchall()]
+        rows = [dict(r) for r in result.mappings().all()]
 
         feeding, diaper, sleep = [], [], []
         for r in rows:
