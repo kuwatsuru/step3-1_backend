@@ -14,7 +14,7 @@ from datetime import datetime
 from gpt_parser import parse_utterance
 from sqlalchemy.orm import sessionmaker
 from db_control.connect_MySQL import engine
-from db_control.mymodels_MySQL import MilkLog
+from db_control.mymodels_MySQL import ActivityLog
 
 # SQLAlchemy セッションの準備
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
@@ -172,10 +172,16 @@ async def record_feed(body: RecordIn):
 # === 3) SQLAlchemy で DB に INSERT ===
     session = SessionLocal()
     try:
-        new_log = MilkLog(
-            milktype   = parsed.get("milktype", "不明"),
-            volume     = parsed.get("volume", 0),
-            created_at = ts
+        new_log = ActivityLog(
+            activity_type = parsed.get("activity_type", ""),
+            milktype      = parsed.get("milktype", ""),
+            volume        = parsed.get("volume", 0),
+            diaper_type   = parsed.get("diaper_type", ""),
+            hardness      = parsed.get("hardness", ""),
+            diaper_amount = parsed.get("diaper_amount", ""),
+            sleep_state   = parsed.get("sleep_state", ""),
+            timestamp     = ts,
+            # created_at は server_default で自動設定
         )
         session.add(new_log)
         session.commit()
@@ -215,4 +221,4 @@ async def record_feed(body: RecordIn):
 #     except Exception as e:
 #         return {"error": str(e)}
     
-#milklogにインサートする
+#ActivityLog
